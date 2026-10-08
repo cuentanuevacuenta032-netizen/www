@@ -1,0 +1,36 @@
+name: PC Windows temporal
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows-pc:
+    runs-on: windows-2025
+
+    steps:
+      - name: Mostrar informacion de la PC
+        shell: powershell
+        run: |
+          Write-Host "=== SISTEMA ==="
+          Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
+
+          Write-Host ""
+          Write-Host "=== CPU ==="
+          Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors
+
+          Write-Host ""
+          Write-Host "=== RAM ==="
+          $ram = Get-CimInstance Win32_ComputerSystem
+          "{0:N2} GB" -f ($ram.TotalPhysicalMemory / 1GB)
+
+          Write-Host ""
+          Write-Host "=== GPU ==="
+          Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM
+
+          Write-Host ""
+          Write-Host "=== DISCO ==="
+          Get-PSDrive C | Select-Object Name, Used, Free
+
+      - name: Prueba final
+        shell: powershell
+        run: Write-Host
